@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discord Selfbot Dashboard</title>
+  <style>
+    :root {
+      --bg-primary: #1e1f22;
+      --bg-secondary: #2b2d31;
+      --bg-card: #313338;
+      --bg-input: #1e1f22;
+      --accent: #5865f2;
+      --accent-hover: #4752c4;
+      --accent-danger: #ed4245;
+      --accent-danger-hover: #c03537;
+      --accent-success: #57f287;
+      --text-primary: #f2f3f5;
+      --text-secondary: #b5bac1;
+      --text-muted: #80848e;
+      --border: #3f4147;
+      --online: #23a55a;
+      --offline: #80848e;
+      --error: #ed4245;
+      --connecting: #f0b232;
+      --radius: 8px;
+      --font: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    header h1 { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    header .subtitle { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+    .main { flex: 1; padding: 28px 24px; max-width: 820px; margin: 0 auto; width: 100%; }
+    .status-bar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .status-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--offline);
+    }
+    .status-dot.online { background: var(--online); box-shadow: 0 0 6px var(--online); }
+    .status-dot.connecting { background: var(--connecting); animation: pulse 1s infinite; }
+    .status-dot.error { background: var(--error); }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    .status-info { flex: 1; }
+    .status-info .label { font-size: 13px; font-weight: 600; }
+    .status-info .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .btn-sm {
+      padding: 6px 14px; font-size: 13px;
+      background: var(--bg-card); color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: 6px;
+      cursor: pointer; font-family: var(--font);
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-sm:hover { background: var(--border); color: var(--text-primary); }
+    .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .card-full { grid-column: 1 / -1; }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .card-icon { font-size: 16px; }
+    .card-body p {
+      font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5;
+    }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle {
+      position: relative; width: 44px; height: 24px;
+      background: var(--border); border-radius: 12px;
+      cursor: pointer; transition: background 0.2s;
+      border: none; outline: none; flex-shrink: 0;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.2s;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle.on::after { transform: translateX(20px); }
+    .toggle-label { font-size: 13px; color: var(--text-secondary); }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; padding: 9px 12px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-primary);
+      font-family: var(--font); font-size: 14px;
+      outline: none; transition: border-color 0.15s;
+    }
+    .field input:focus, .field textarea:focus { border-color: var(--accent); }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 18px; font-size: 14px; font-weight: 600;
+      border-radius: 6px; border: none; cursor: pointer;
+      font-family: var(--font); transition: background 0.15s, opacity 0.15s;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-danger { background: var(--accent-danger); color: white; }
+    .btn-danger:hover:not(:disabled) { background: var(--accent-danger-hover); }
+    .btn-full { width: 100%; }
+    .row { display: flex; gap: 8px; align-items: flex-end; }
+    .row .field { flex: 1; margin-bottom: 0; }
+    .toast-wrap {
+      position: fixed; bottom: 24px; right: 24px;
+      display: flex; flex-direction: column; gap: 8px; z-index: 99;
+    }
+    .toast {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 16px;
+      font-size: 13px; max-width: 300px;
+      animation: slideIn 0.2s ease;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.success { border-left: 3px solid var(--accent-success); }
+    .toast.error { border-left: 3px solid var(--error); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); z-index: 50;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; width: 100%; max-width: 420px;
+      margin: 16px;
+    }
+    .modal h2 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5; }
+    .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 12px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge-online { background: rgba(35,165,90,0.2); color: var(--online); }
+    .badge-offline { background: rgba(128,132,142,0.2); color: var(--offline); }
+    .badge-error { background: rgba(237,66,69,0.2); color: var(--error); }
+    .badge-connecting { background: rgba(240,178,50,0.2); color: var(--connecting); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🤖</div>
+    <div>
+      <h1>Discord Selfbot Dashboard</h1>
+    </div>
+    <span class="subtitle">v1.1</span>
+  </header>
+
+  <main class="main">
+    <div class="status-bar">
+      <div class="status-dot" id="statusDot"></div>
+      <div class="status-info">
+        <div class="label" id="statusLabel">Loading…</div>
+        <div class="sub" id="statusSub">Fetching bot status</div>
+      </div>
+      <button class="btn-sm" id="restartBtn" onclick="restartBot()">↺ Restart Bot</button>
+      <button class="btn-sm" onclick="openTokenModal()">🔑 Change Token</button>
+    </div>
+
+    <div class="cards">
+      <!-- Auto-React Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">⚡</span> Auto-React</div>
+          <button class="toggle" id="autoReactToggle" onclick="toggleAutoReact()"></button>
+        </div>
+        <div class="card-body">
+          <p>Automatically react to every message you send with the configured emoji.</p>
+          <div class="field">
+            <label>Emoji</label>
+            <input type="text" id="emojiInput" value="👍" placeholder="e.g. 👍 or :heart:" maxlength="10" />
+          </div>
+          <button class="btn btn-primary btn-full" onclick="saveEmoji()">Save Emoji</button>
+        </div>
+      </div>
+
+      <!-- Clipboard Messenger Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">📋</span> Clipboard Messenger</div>
+          <button class="toggle" id="clipboardToggle" onclick="toggleClipboard()"></button>
+        </div>
+        <div class="card-body">
+          <p>Send a message to a specific channel or group chat.</p>
+          <div class="field">
+            <label>Channel / Group ID</label>
+            <input type="text" id="channelIdInput" placeholder="e.g. 123456789012345678" />
+          </div>
+          <button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="saveChannelId()">Save Channel ID</button>
+          <hr class="divider" />
+          <div class="field">
+            <label>Message</label>
+            <textarea id="messageInput" placeholder="Paste your message here…"></textarea>
+          </div>
+          <div class="field">
+            <label>Interval: <span id="delayLabel">300ms</span></label>
+            <input type="range" id="delaySlider" min="300" max="2000" step="50" value="300"
+              oninput="updateDelayLabel(this.value)"
+              style="width:100%;accent-color:var(--accent);cursor:pointer;margin-top:4px;" />
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:2px;">
+              <span>300ms (fastest)</span><span>2s (slowest)</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" style="flex:1" onclick="sendOnce()" id="sendOnceBtn">Send Once</button>
+            <button class="btn btn-primary" style="flex:1;background:var(--online)" onclick="startAutoSend()" id="startBtn">▶ Start</button>
+            <button class="btn btn-danger" style="flex:1;display:none" onclick="stopAutoSend()" id="stopBtn">■ Stop</button>
+          </div>
+          <div id="sendStats" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;">
+            Sent: <span id="sendCount">0</span> messages
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Token Modal -->
+  <div class="modal-overlay" id="tokenModal">
+    <div class="modal">
+      <h2>🔑 Change Account Token</h2>
+      <p>Enter a new Discord user token. The bot will disconnect and reconnect immediately. Your dashboard will stay open.</p>
+      <div class="field">
+        <label>Discord Token</label>
+        <input type="password" id="tokenInput" placeholder="Paste your token here…" />
+      </div>
+      <div class="actions">
+        <button class="btn" style="background:var(--bg-card);color:var(--text-secondary)" onclick="closeTokenModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="changeToken()" id="changeTokenBtn">Apply & Reconnect</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    const API = '/api/dashboard';
+    let state = {
+      autoReact: { enabled: false, emoji: '👍' },
+      clipboardMessenger: { enabled: false, channelId: '' },
+      bot: { status: 'offline', username: null, error: null },
+      autoSend: { active: false, count: 0, message: '', channelId: '', intervalMs: 300 }
+    };
+
+    // Fast polling when bot is connecting — slow down once stable
+    let pollInterval = 2000;
+    let pollTimer = null;
+
+    function startPolling(intervalMs) {
+      if (pollTimer) clearInterval(pollTimer);
+      pollInterval = intervalMs;
+      pollTimer = setInterval(fetchStatus, pollInterval);
+    }
+
+    function setFastPoll() { startPolling(1500); }
+    function setNormalPoll() { startPolling(5000); }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch(`${API}/status`);
+        const data = await res.json();
+        state.autoReact = data.config.autoReact;
+        state.clipboardMessenger = data.config.clipboardMessenger;
+        state.bot = data.bot;
+        state.autoSend = data.autoSend;
+        renderAll();
+        // Slow down polling once we reach a stable state
+        const s = data.bot.status;
+        if (s === 'online' || s === 'offline' || s === 'error') {
+          if (pollInterval < 4000) setNormalPoll();
+        }
+      } catch (e) {
+        console.error('Status fetch failed', e);
+      }
+    }
+
+    function renderAll() {
+      renderStatus();
+      renderAutoReact();
+      renderClipboard();
+      renderAutoSendUI();
+    }
+
+    function renderStatus() {
+      const dot = document.getElementById('statusDot');
+      const label = document.getElementById('statusLabel');
+      const sub = document.getElementById('statusSub');
+      const restartBtn = document.getElementById('restartBtn');
+      const s = state.bot.status;
+      dot.className = 'status-dot ' + s;
+      const labels = { online: 'Online', offline: 'Offline', connecting: 'Connecting…', error: 'Connection Failed' };
+      label.textContent = labels[s] || s;
+      if (s === 'online') {
+        sub.textContent = `Logged in as ${state.bot.username || 'Unknown'}`;
+      } else if (s === 'error') {
+        const msg = state.bot.error || 'An error occurred';
+        // Friendly messages for common errors
+        if (msg.toLowerCase().includes('invalid token') || msg.toLowerCase().includes('token')) {
+          sub.textContent = 'Invalid token — use "Change Token" to update it';
+        } else {
+          sub.textContent = msg;
+        }
+      } else if (s === 'connecting') {
+        sub.textContent = 'Authenticating with Discord…';
+      } else {
+        sub.textContent = 'Bot is not running — use "Restart Bot" or set a token';
+      }
+      restartBtn.disabled = (s === 'connecting');
+    }
+
+    function renderAutoReact() {
+      const toggle = document.getElementById('autoReactToggle');
+      toggle.className = 'toggle' + (state.autoReact.enabled ? ' on' : '');
+      document.getElementById('emojiInput').value = state.autoReact.emoji || '👍';
+    }
+
+    function renderClipboard() {
+      const toggle = document.getElementById('clipboardToggle');
+      toggle.className = 'toggle' + (state.clipboardMessenger.enabled ? ' on' : '');
+      const cidInput = document.getElementById('channelIdInput');
+      if (!cidInput.dataset.edited) cidInput.value = state.clipboardMessenger.channelId || '';
+    }
+
+    async function toggleAutoReact() {
+      const newVal = !state.autoReact.enabled;
+      try {
+        const res = await fetch(`${API}/auto-react`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: newVal, emoji: state.autoReact.emoji })
+        });
+        const data = await res.json();
+        state.autoReact = data.autoReact;
+        renderAutoReact();
+        toast(newVal ? '✅ Auto-React enabled' : '⛔ Auto-React disabled', newVal ? 'success' : '');
+      } catch { toast('Failed to toggle Auto-React', 'error'); }
+    }
+
+    async function saveEmoji() {
+      const emoji = document.getElementById('emojiInput').value.trim();
+      if (!emoji) return toast('Emoji cannot be empty', 'error');
+      try {
+        const res = await fetch(`${API}/auto-react`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: state.autoReact.enabled, emoji })
+        });
+        const data = await res.json();
+        state.autoReact = data.autoReact;
+        toast('✅ Emoji saved: ' + emoji, 'success');
+      } catch { toast('Failed to save emoji', 'error'); }
+    }
+
+    async function toggleClipboard() {
+      const newVal = !state.clipboardMessenger.enabled;
+      try {
+        const res = await fetch(`${API}/clipboard-messenger`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: newVal, channelId: state.clipboardMessenger.channelId })
+        });
+        const data = await res.json();
+        state.clipboardMessenger = data.clipboardMessenger;
+        renderClipboard();
+        toast(newVal ? '✅ Clipboard Messenger enabled' : '⛔ Clipboard Messenger disabled', newVal ? 'success' : '');
+      } catch { toast('Failed to toggle Clipboard Messenger', 'error'); }
+    }
+
+    async function saveChannelId() {
+      const channelId = document.getElementById('channelIdInput').value.trim();
+      try {
+        const res = await fetch(`${API}/clipboard-messenger`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: state.clipboardMessenger.enabled, channelId })
+        });
+        const data = await res.json();
+        state.clipboardMessenger = data.clipboardMessenger;
+        document.getElementById('channelIdInput').dataset.edited = '';
+        toast('✅ Channel ID saved', 'success');
+      } catch { toast('Failed to save Channel ID', 'error'); }
+    }
+
+    function updateDelayLabel(val) {
+      const ms = parseInt(val);
+      document.getElementById('delayLabel').textContent = ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : ms + 'ms';
+      if (state.autoSend && state.autoSend.active) {
+        fetch(`${API}/auto-send/interval`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ intervalMs: parseInt(val) })
+        }).catch(() => {});
+      }
+    }
+
+    async function sendOnce() {
+      const message = document.getElementById('messageInput').value.trim();
+      const channelId = document.getElementById('channelIdInput').value.trim() || state.clipboardMessenger.channelId;
+      if (!message) return toast('Message cannot be empty', 'error');
+      if (!channelId) return toast('Please enter a Channel ID first', 'error');
+      const btn = document.getElementById('sendOnceBtn');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        const res = await fetch(`${API}/send-message`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, channelId })
+        });
+        const data = await res.json();
+        if (data.success) toast('✅ Message sent!', 'success');
+        else toast('Error: ' + (data.error || 'Failed'), 'error');
+      } catch { toast('Failed to send message', 'error'); }
+      btn.disabled = false; btn.textContent = 'Send Once';
+    }
+
+    async function startAutoSend() {
+      const message = document.getElementById('messageInput').value.trim();
+      const channelId = document.getElementById('channelIdInput').value.trim() || state.clipboardMessenger.channelId;
+      if (!message) return toast('Message cannot be empty', 'error');
+      if (!channelId) return toast('Please enter a Channel ID first', 'error');
+      const intervalMs = parseInt(document.getElementById('delaySlider').value);
+      try {
+        const res = await fetch(`${API}/auto-send/start`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, channelId, intervalMs })
+        });
+        const data = await res.json();
+        if (data.success) {
+          state.autoSend = data.autoSend;
+          renderAutoSendUI();
+          toast('▶ Auto-send running on server', 'success');
+        } else {
+          toast('Error: ' + (data.error || 'Failed to start'), 'error');
+        }
+      } catch { toast('Failed to start auto-send', 'error'); }
+    }
+
+    async function stopAutoSend() {
+      try {
+        const res = await fetch(`${API}/auto-send/stop`, { method: 'POST' });
+        const data = await res.json();
+        const count = state.autoSend ? state.autoSend.count : 0;
+        state.autoSend = data.autoSend;
+        renderAutoSendUI();
+        toast('⛔ Auto-send stopped after ' + count + ' messages', '');
+      } catch { toast('Failed to stop auto-send', 'error'); }
+    }
+
+    function renderAutoSendUI() {
+      const active = state.autoSend && state.autoSend.active;
+      document.getElementById('startBtn').style.display = active ? 'none' : '';
+      document.getElementById('stopBtn').style.display = active ? '' : 'none';
+      document.getElementById('sendOnceBtn').disabled = !!active;
+      document.getElementById('sendStats').style.display = active ? 'block' : 'none';
+      if (active) {
+        document.getElementById('sendCount').textContent = state.autoSend.count;
+        const msgEl = document.getElementById('messageInput');
+        if (!msgEl.value && state.autoSend.message) msgEl.value = state.autoSend.message;
+        const cidEl = document.getElementById('channelIdInput');
+        if (!cidEl.value && state.autoSend.channelId) cidEl.value = state.autoSend.channelId;
+        const slider = document.getElementById('delaySlider');
+        slider.value = state.autoSend.intervalMs;
+        updateDelayLabel(state.autoSend.intervalMs);
+      }
+    }
+
+    async function restartBot() {
+      const btn = document.getElementById('restartBtn');
+      btn.disabled = true;
+      try {
+        const res = await fetch(`${API}/restart-bot`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          state.bot.status = 'connecting';
+          renderStatus();
+          toast('🔄 Restarting bot…', '');
+          setFastPoll();
+        } else {
+          toast('Error: ' + (data.error || 'Failed to restart'), 'error');
+          btn.disabled = false;
+        }
+      } catch {
+        toast('Failed to reach server', 'error');
+        btn.disabled = false;
+      }
+    }
+
+    function openTokenModal() {
+      document.getElementById('tokenInput').value = '';
+      document.getElementById('changeTokenBtn').disabled = false;
+      document.getElementById('changeTokenBtn').textContent = 'Apply & Reconnect';
+      document.getElementById('tokenModal').classList.add('active');
+    }
+    function closeTokenModal() {
+      document.getElementById('tokenModal').classList.remove('active');
+    }
+
+    async function changeToken() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return toast('Token cannot be empty', 'error');
+      const btn = document.getElementById('changeTokenBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      try {
+        const res = await fetch(`${API}/change-token`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeTokenModal();
+          state.bot.status = 'connecting';
+          renderStatus();
+          toast('✅ Token saved — reconnecting…', 'success');
+          // Poll fast until the bot settles
+          setFastPoll();
+        } else {
+          toast('Error: ' + (data.error || 'Failed'), 'error');
+          btn.disabled = false; btn.textContent = 'Apply & Reconnect';
+        }
+      } catch {
+        toast('Failed to reach server', 'error');
+        btn.disabled = false; btn.textContent = 'Apply & Reconnect';
+      }
+    }
+
+    function toast(msg, type = '') {
+      const wrap = document.getElementById('toastWrap');
+      const el = document.createElement('div');
+      el.className = 'toast' + (type ? ' ' + type : '');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    document.getElementById('channelIdInput').addEventListener('input', function() {
+      this.dataset.edited = '1';
+    });
+    document.getElementById('tokenModal').addEventListener('click', function(e) {
+      if (e.target === this) closeTokenModal();
+    });
+
+    fetchStatus();
+    setNormalPoll();
+  </script>
+</body>
+</html>

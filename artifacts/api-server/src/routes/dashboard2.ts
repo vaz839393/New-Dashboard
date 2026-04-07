@@ -1,8 +1,8 @@
 import { Router, type IRouter } from "express";
-import { bot1 } from "../lib/bot.js";
-import { loadConfig, updateConfig, setRuntimeToken, getDiscordToken } from "../lib/config.js";
+import { bot2 } from "../lib/bot.js";
+import { loadConfig, updateConfig, setRuntimeToken2, getDiscordToken2 } from "../lib/config.js";
 
-const { getBotStatus, restartBot, sendMessage, startAutoSend, stopAutoSend, getAutoSendStatus, updateAutoSendInterval } = bot1;
+const { getBotStatus, restartBot, sendMessage, startAutoSend, stopAutoSend, getAutoSendStatus, updateAutoSendInterval } = bot2;
 
 const router: IRouter = Router();
 
@@ -12,9 +12,9 @@ router.get("/status", (_req, res) => {
     bot: getBotStatus(),
     autoSend: getAutoSendStatus(),
     config: {
-      autoReact: config.autoReact,
-      clipboardMessenger: config.clipboardMessenger,
-      hasToken: !!getDiscordToken(),
+      autoReact: config.autoReact2,
+      clipboardMessenger: config.clipboardMessenger2,
+      hasToken: !!getDiscordToken2(),
     },
   });
 });
@@ -22,21 +22,21 @@ router.get("/status", (_req, res) => {
 router.post("/auto-react", (req, res) => {
   const { enabled, emoji } = req.body as { enabled?: boolean; emoji?: string };
   const cur = loadConfig();
-  const updated = updateConfig({ autoReact: { enabled: enabled ?? cur.autoReact.enabled, emoji: emoji ?? cur.autoReact.emoji } });
-  res.json({ success: true, autoReact: updated.autoReact });
+  const updated = updateConfig({ autoReact2: { enabled: enabled ?? cur.autoReact2.enabled, emoji: emoji ?? cur.autoReact2.emoji } });
+  res.json({ success: true, autoReact: updated.autoReact2 });
 });
 
 router.post("/clipboard-messenger", (req, res) => {
   const { enabled, channelId } = req.body as { enabled?: boolean; channelId?: string };
   const cur = loadConfig();
-  const updated = updateConfig({ clipboardMessenger: { enabled: enabled ?? cur.clipboardMessenger.enabled, channelId: channelId ?? cur.clipboardMessenger.channelId } });
-  res.json({ success: true, clipboardMessenger: updated.clipboardMessenger });
+  const updated = updateConfig({ clipboardMessenger2: { enabled: enabled ?? cur.clipboardMessenger2.enabled, channelId: channelId ?? cur.clipboardMessenger2.channelId } });
+  res.json({ success: true, clipboardMessenger: updated.clipboardMessenger2 });
 });
 
 router.post("/send-message", async (req, res) => {
   const config = loadConfig();
   const { message, channelId } = req.body as { message?: string; channelId?: string };
-  const target = channelId || config.clipboardMessenger.channelId;
+  const target = channelId || config.clipboardMessenger2.channelId;
   if (!message || !target) { res.status(400).json({ success: false, error: "Missing message or channelId" }); return; }
   const result = await sendMessage(target, message);
   res.status(result.success ? 200 : 500).json(result.success ? { success: true } : { success: false, error: result.error });
@@ -64,14 +64,14 @@ router.post("/auto-send/interval", (req, res) => {
 router.post("/change-token", (req, res) => {
   const { token } = req.body as { token?: string };
   if (!token?.trim()) { res.status(400).json({ success: false, error: "Token cannot be empty" }); return; }
-  setRuntimeToken(token.trim());
-  restartBot(token.trim()).catch((e) => console.error("bot1 restartBot error:", e));
+  setRuntimeToken2(token.trim());
+  restartBot(token.trim()).catch((e) => console.error("bot2 restartBot error:", e));
   res.json({ success: true, message: "Token updated. Reconnecting in background…" });
 });
 
 router.post("/restart-bot", (_req, res) => {
-  if (!getDiscordToken()) { res.status(400).json({ success: false, error: "No token configured — set DISCORD_TOKEN secret first" }); return; }
-  restartBot().catch((e) => console.error("bot1 restartBot error:", e));
+  if (!getDiscordToken2()) { res.status(400).json({ success: false, error: "No token configured — set DISCORD_TOKEN_2 secret or use Change Token" }); return; }
+  restartBot().catch((e) => console.error("bot2 restartBot error:", e));
   res.json({ success: true, message: "Bot restart initiated…" });
 });
 

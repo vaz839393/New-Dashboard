@@ -1,8 +1,7 @@
 import app from "./app";
 import { logger } from "./lib/logger";
-import { startBot } from "./lib/bot";
+import { bot1, bot2 } from "./lib/bot";
 
-// Default to 10000 for Render deployments; Replit injects its own PORT at runtime.
 const port = Number(process.env["PORT"] ?? 10000);
 
 if (Number.isNaN(port) || port <= 0) {
@@ -16,5 +15,10 @@ app.listen(port, async (err) => {
   }
 
   logger.info({ port }, "Server listening — dashboard at http://localhost:" + port);
-  await startBot();
+
+  // Start both accounts in parallel
+  await Promise.all([
+    bot1.startBot(),
+    bot2.startBot(),
+  ]);
 });

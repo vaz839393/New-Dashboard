@@ -9,206 +9,236 @@
   <title>Discord Selfbot Dashboard</title>
   <style>
     :root {
-      --bg-primary: #1e1f22;
-      --bg-secondary: #2b2d31;
-      --bg-card: #313338;
-      --bg-input: #1e1f22;
-      --accent: #5865f2;
-      --accent-hover: #4752c4;
-      --accent-danger: #ed4245;
-      --accent-danger-hover: #c03537;
-      --accent-success: #57f287;
-      --text-primary: #f2f3f5;
-      --text-secondary: #b5bac1;
-      --text-muted: #80848e;
-      --border: #3f4147;
+      --bg: #1e1f22;
+      --bg2: #2b2d31;
+      --card: #313338;
+      --input: #1e1f22;
+      --blue: #5865f2;
+      --blue-h: #4752c4;
+      --purple: #9b84ec;
+      --purple-h: #7b63d0;
+      --red: #ed4245;
+      --red-h: #c03537;
+      --green: #57f287;
       --online: #23a55a;
       --offline: #80848e;
-      --error: #ed4245;
-      --connecting: #f0b232;
-      --radius: 8px;
-      --font: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --warn: #f0b232;
+      --text: #f2f3f5;
+      --sub: #b5bac1;
+      --muted: #80848e;
+      --border: #3f4147;
+      --r: 8px;
+      --font: -apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font); background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
-    header { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
-    .logo { width: 36px; height: 36px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    header h1 { font-size: 18px; font-weight: 700; }
-    header .subtitle { font-size: 12px; color: var(--text-muted); margin-left: auto; }
-    .main { flex: 1; padding: 28px 24px; max-width: 900px; margin: 0 auto; width: 100%; }
-    .account-block { margin-bottom: 32px; }
-    .account-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-    .account-label.acc2 { color: #9b84ec; border-color: #9b84ec33; }
-    .status-bar { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--offline); }
-    .status-dot.online { background: var(--online); box-shadow: 0 0 6px var(--online); }
-    .status-dot.connecting { background: var(--connecting); animation: pulse 1s infinite; }
-    .status-dot.error { background: var(--error); }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .status-info { flex: 1; }
-    .status-info .label { font-size: 13px; font-weight: 600; }
-    .status-info .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-    .btn-sm { padding: 6px 14px; font-size: 13px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-family: var(--font); transition: background 0.15s, color 0.15s; }
-    .btn-sm:hover { background: var(--border); color: var(--text-primary); }
-    .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
-    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
-    .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .card-body p { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
-    .toggle { position: relative; width: 44px; height: 24px; background: var(--border); border-radius: 12px; cursor: pointer; transition: background 0.2s; border: none; outline: none; flex-shrink: 0; }
-    .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform 0.2s; }
-    .toggle.on { background: var(--accent); }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* header */
+    header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
+    .logo { width: 34px; height: 34px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    header h1 { font-size: 17px; font-weight: 700; }
+    header .ver { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+    /* tabs */
+    .tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--border); }
+    .tab { flex: 1; padding: 12px 0; text-align: center; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; user-select: none; position: relative; }
+    .tab.active.acc1 { color: var(--blue); border-color: var(--blue); }
+    .tab.active.acc2 { color: var(--purple); border-color: var(--purple); }
+    .tab .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--offline); margin-right: 6px; vertical-align: middle; }
+    .tab .dot.online { background: var(--online); }
+    .tab .dot.connecting { background: var(--warn); animation: pulse 1s infinite; }
+    .tab .dot.error { background: var(--red); }
+
+    /* panels */
+    .panel { display: none; padding: 20px 16px; max-width: 700px; margin: 0 auto; width: 100%; }
+    .panel.active { display: block; }
+
+    /* status bar */
+    .status-bar { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .sdot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; background: var(--offline); }
+    .sdot.online { background: var(--online); box-shadow: 0 0 6px var(--online); }
+    .sdot.connecting { background: var(--warn); animation: pulse 1s infinite; }
+    .sdot.error { background: var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+    .sinfo { flex: 1; min-width: 0; }
+    .sinfo .sl { font-size: 13px; font-weight: 600; }
+    .sinfo .ss { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; background: var(--card); color: var(--sub); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-family: var(--font); white-space: nowrap; transition: background .15s; }
+    .btn-sm:hover { background: var(--border); color: var(--text); }
+    .btn-sm:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* cards */
+    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; margin-bottom: 14px; }
+    .card.acc2 { border-color: #9b84ec22; }
+    .ch { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .ct { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+    .cd p { font-size: 13px; color: var(--sub); margin-bottom: 12px; line-height: 1.5; }
+    .toggle { position: relative; width: 44px; height: 24px; background: var(--border); border-radius: 12px; cursor: pointer; transition: background .2s; border: none; outline: none; flex-shrink: 0; }
+    .toggle::after { content:''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform .2s; }
+    .toggle.on { background: var(--blue); }
+    .toggle.on.p { background: var(--purple); }
     .toggle.on::after { transform: translateX(20px); }
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .field input, .field textarea { width: 100%; padding: 9px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary); font-family: var(--font); font-size: 14px; outline: none; transition: border-color 0.15s; }
-    .field input:focus, .field textarea:focus { border-color: var(--accent); }
-    .field textarea { resize: vertical; min-height: 72px; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 18px; font-size: 14px; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; font-family: var(--font); transition: background 0.15s, opacity 0.15s; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-primary { background: var(--accent); color: white; }
-    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-    .btn-danger { background: var(--accent-danger); color: white; }
-    .btn-danger:hover:not(:disabled) { background: var(--accent-danger-hover); }
+    .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+    .field input, .field textarea { width: 100%; padding: 9px 11px; background: var(--input); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font); font-size: 14px; outline: none; transition: border-color .15s; }
+    .field input:focus, .field textarea:focus { border-color: var(--blue); }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; font-size: 14px; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; font-family: var(--font); transition: background .15s, opacity .15s; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-blue { background: var(--blue); color: white; }
+    .btn-blue:hover:not(:disabled) { background: var(--blue-h); }
+    .btn-purple { background: var(--purple); color: white; }
+    .btn-purple:hover:not(:disabled) { background: var(--purple-h); }
+    .btn-red { background: var(--red); color: white; }
+    .btn-red:hover:not(:disabled) { background: var(--red-h); }
+    .btn-green { background: var(--online); color: white; }
+    .btn-green:hover:not(:disabled) { background: #1a8a44; }
     .btn-full { width: 100%; }
-    .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-    .toast-wrap { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 99; }
-    .toast { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; max-width: 300px; animation: slideIn 0.2s ease; }
-    .toast.success { border-left: 3px solid var(--accent-success); }
-    .toast.error { border-left: 3px solid var(--error); }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; }
-    .modal-overlay.active { display: flex; }
-    .modal { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 420px; margin: 16px; }
+    .row { display: flex; gap: 8px; }
+    .row .btn { flex: 1; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+    /* toast */
+    .toast-wrap { position: fixed; bottom: 20px; right: 16px; display: flex; flex-direction: column; gap: 7px; z-index: 99; }
+    .toast { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 11px 14px; font-size: 13px; max-width: 280px; animation: tslide .2s ease; }
+    .toast.ok { border-left: 3px solid var(--green); }
+    .toast.err { border-left: 3px solid var(--red); }
+    @keyframes tslide { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+
+    /* modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 50; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 22px; width: 100%; max-width: 400px; }
     .modal h2 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5; }
-    .modal .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+    .modal p { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">🤖</div>
-    <div><h1>Discord Selfbot Dashboard</h1></div>
-    <span class="subtitle">v2.0 · dual account</span>
+    <h1>Discord Selfbot Dashboard</h1>
+    <span class="ver">v3.0</span>
   </header>
 
-  <main class="main">
+  <div class="tabs">
+    <div class="tab acc1 active" id="tab1" onclick="switchTab(1)">
+      <span class="dot" id="t1-dot"></span>Account 1
+    </div>
+    <div class="tab acc2" id="tab2" onclick="switchTab(2)">
+      <span class="dot" id="t2-dot"></span>Account 2
+    </div>
+  </div>
 
-    <!-- ── ACCOUNT 1 ── -->
-    <div class="account-block">
-      <div class="account-label">Account 1</div>
-      <div class="status-bar">
-        <div class="status-dot" id="a1-statusDot"></div>
-        <div class="status-info">
-          <div class="label" id="a1-statusLabel">Loading…</div>
-          <div class="sub" id="a1-statusSub">Fetching bot status</div>
-        </div>
-        <button class="btn-sm" id="a1-restartBtn" onclick="restartBot(1)">↺ Restart</button>
-        <button class="btn-sm" onclick="openTokenModal(1)">🔑 Token</button>
+  <!-- ACCOUNT 1 PANEL -->
+  <div class="panel active" id="panel1">
+    <div class="status-bar">
+      <div class="sdot" id="a1-statusDot"></div>
+      <div class="sinfo">
+        <div class="sl" id="a1-statusLabel">Loading…</div>
+        <div class="ss" id="a1-statusSub">Fetching status</div>
       </div>
-      <div class="cards">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title"><span>⚡</span> Auto-React</div>
-            <button class="toggle" id="a1-autoReactToggle" onclick="toggleAutoReact(1)"></button>
-          </div>
-          <div class="card-body">
-            <p>React with an emoji to every message you send.</p>
-            <div class="field"><label>Emoji</label><input type="text" id="a1-emojiInput" value="👍" maxlength="10" /></div>
-            <button class="btn btn-primary btn-full" onclick="saveEmoji(1)">Save Emoji</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title"><span>📋</span> Clipboard Messenger</div>
-            <button class="toggle" id="a1-clipboardToggle" onclick="toggleClipboard(1)"></button>
-          </div>
-          <div class="card-body">
-            <p>Spam a message to a Discord channel.</p>
-            <div class="field"><label>Channel / Group ID</label><input type="text" id="a1-channelIdInput" placeholder="123456789012345678" /></div>
-            <button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="saveChannelId(1)">Save Channel ID</button>
-            <hr class="divider" />
-            <div class="field"><label>Message</label><textarea id="a1-messageInput" placeholder="Type your message…"></textarea></div>
-            <div class="field">
-              <label>Interval: <span id="a1-delayLabel">300ms</span></label>
-              <input type="range" id="a1-delaySlider" min="50" max="2000" step="50" value="300" oninput="updateDelayLabel(1,this.value)" style="width:100%;accent-color:var(--accent);cursor:pointer;margin-top:4px;" />
-              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:2px;"><span>50ms (fastest)</span><span>2s (slowest)</span></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary" style="flex:1" onclick="sendOnce(1)" id="a1-sendOnceBtn">Send Once</button>
-              <button class="btn btn-primary" style="flex:1;background:var(--online)" onclick="startAutoSend(1)" id="a1-startBtn">▶ Start</button>
-              <button class="btn btn-danger" style="flex:1;display:none" onclick="stopAutoSend(1)" id="a1-stopBtn">■ Stop</button>
-            </div>
-            <div id="a1-sendStats" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;">Sent: <span id="a1-sendCount">0</span></div>
-          </div>
-        </div>
+      <button class="btn-sm" id="a1-restartBtn" onclick="restartBot(1)">↺ Restart</button>
+      <button class="btn-sm" onclick="openTokenModal(1)">🔑 Token</button>
+    </div>
+
+    <div class="card">
+      <div class="ch">
+        <div class="ct"><span>⚡</span> Auto-React</div>
+        <button class="toggle" id="a1-autoReactToggle" onclick="toggleAutoReact(1)"></button>
+      </div>
+      <div class="cd">
+        <p>Automatically react to every message you send.</p>
+        <div class="field"><label>Emoji</label><input type="text" id="a1-emojiInput" value="👍" maxlength="10" /></div>
+        <button class="btn btn-blue btn-full" onclick="saveEmoji(1)">Save Emoji</button>
       </div>
     </div>
 
-    <!-- ── ACCOUNT 2 ── -->
-    <div class="account-block">
-      <div class="account-label acc2">Account 2</div>
-      <div class="status-bar" style="border-color:#9b84ec44;">
-        <div class="status-dot" id="a2-statusDot"></div>
-        <div class="status-info">
-          <div class="label" id="a2-statusLabel">Loading…</div>
-          <div class="sub" id="a2-statusSub">Fetching bot status</div>
-        </div>
-        <button class="btn-sm" id="a2-restartBtn" onclick="restartBot(2)">↺ Restart</button>
-        <button class="btn-sm" onclick="openTokenModal(2)">🔑 Token</button>
+    <div class="card">
+      <div class="ch">
+        <div class="ct"><span>📋</span> Clipboard Messenger</div>
+        <button class="toggle" id="a1-clipboardToggle" onclick="toggleClipboard(1)"></button>
       </div>
-      <div class="cards">
-        <div class="card" style="border-color:#9b84ec22;">
-          <div class="card-header">
-            <div class="card-title"><span>⚡</span> Auto-React</div>
-            <button class="toggle" id="a2-autoReactToggle" onclick="toggleAutoReact(2)"></button>
-          </div>
-          <div class="card-body">
-            <p>React with an emoji to every message you send.</p>
-            <div class="field"><label>Emoji</label><input type="text" id="a2-emojiInput" value="👍" maxlength="10" /></div>
-            <button class="btn btn-primary btn-full" onclick="saveEmoji(2)">Save Emoji</button>
-          </div>
+      <div class="cd">
+        <p>Spam a message to a Discord channel.</p>
+        <div class="field"><label>Channel / Group ID</label><input type="text" id="a1-channelIdInput" placeholder="123456789012345678" /></div>
+        <button class="btn btn-blue btn-full" style="margin-bottom:10px" onclick="saveChannelId(1)">Save Channel ID</button>
+        <hr />
+        <div class="field"><label>Message</label><textarea id="a1-messageInput" placeholder="Type your message…"></textarea></div>
+        <div class="field">
+          <label>Interval: <span id="a1-delayLabel">300ms</span></label>
+          <input type="range" id="a1-delaySlider" min="50" max="2000" step="50" value="300" oninput="updateDelayLabel(1,this.value)" style="width:100%;accent-color:var(--blue);cursor:pointer;margin-top:4px;" />
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px;"><span>50ms</span><span>2s</span></div>
         </div>
-        <div class="card" style="border-color:#9b84ec22;">
-          <div class="card-header">
-            <div class="card-title"><span>📋</span> Clipboard Messenger</div>
-            <button class="toggle" id="a2-clipboardToggle" onclick="toggleClipboard(2)"></button>
-          </div>
-          <div class="card-body">
-            <p>Spam a message to a Discord channel.</p>
-            <div class="field"><label>Channel / Group ID</label><input type="text" id="a2-channelIdInput" placeholder="123456789012345678" /></div>
-            <button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="saveChannelId(2)">Save Channel ID</button>
-            <hr class="divider" />
-            <div class="field"><label>Message</label><textarea id="a2-messageInput" placeholder="Type your message…"></textarea></div>
-            <div class="field">
-              <label>Interval: <span id="a2-delayLabel">300ms</span></label>
-              <input type="range" id="a2-delaySlider" min="50" max="2000" step="50" value="300" oninput="updateDelayLabel(2,this.value)" style="width:100%;accent-color:#9b84ec;cursor:pointer;margin-top:4px;" />
-              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:2px;"><span>50ms (fastest)</span><span>2s (slowest)</span></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary" style="flex:1" onclick="sendOnce(2)" id="a2-sendOnceBtn">Send Once</button>
-              <button class="btn btn-primary" style="flex:1;background:var(--online)" onclick="startAutoSend(2)" id="a2-startBtn">▶ Start</button>
-              <button class="btn btn-danger" style="flex:1;display:none" onclick="stopAutoSend(2)" id="a2-stopBtn">■ Stop</button>
-            </div>
-            <div id="a2-sendStats" style="font-size:12px;color:var(--text-muted);margin-top:8px;display:none;">Sent: <span id="a2-sendCount">0</span></div>
-          </div>
+        <div class="row">
+          <button class="btn btn-blue" onclick="sendOnce(1)" id="a1-sendOnceBtn">Send Once</button>
+          <button class="btn btn-green" onclick="startAutoSend(1)" id="a1-startBtn">▶ Start</button>
+          <button class="btn btn-red" style="display:none" onclick="stopAutoSend(1)" id="a1-stopBtn">■ Stop</button>
         </div>
+        <div id="a1-sendStats" style="font-size:12px;color:var(--muted);margin-top:8px;display:none;">Sent: <span id="a1-sendCount">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT 2 PANEL -->
+  <div class="panel" id="panel2">
+    <div class="status-bar" style="border-color:#9b84ec33;">
+      <div class="sdot" id="a2-statusDot"></div>
+      <div class="sinfo">
+        <div class="sl" id="a2-statusLabel">Loading…</div>
+        <div class="ss" id="a2-statusSub">Fetching status</div>
+      </div>
+      <button class="btn-sm" id="a2-restartBtn" onclick="restartBot(2)">↺ Restart</button>
+      <button class="btn-sm" onclick="openTokenModal(2)">🔑 Token</button>
+    </div>
+
+    <div class="card acc2">
+      <div class="ch">
+        <div class="ct"><span>⚡</span> Auto-React</div>
+        <button class="toggle p" id="a2-autoReactToggle" onclick="toggleAutoReact(2)"></button>
+      </div>
+      <div class="cd">
+        <p>Automatically react to every message you send.</p>
+        <div class="field"><label>Emoji</label><input type="text" id="a2-emojiInput" value="👍" maxlength="10" /></div>
+        <button class="btn btn-purple btn-full" onclick="saveEmoji(2)">Save Emoji</button>
       </div>
     </div>
 
-  </main>
+    <div class="card acc2">
+      <div class="ch">
+        <div class="ct"><span>📋</span> Clipboard Messenger</div>
+        <button class="toggle p" id="a2-clipboardToggle" onclick="toggleClipboard(2)"></button>
+      </div>
+      <div class="cd">
+        <p>Spam a message to a Discord channel.</p>
+        <div class="field"><label>Channel / Group ID</label><input type="text" id="a2-channelIdInput" placeholder="123456789012345678" /></div>
+        <button class="btn btn-purple btn-full" style="margin-bottom:10px" onclick="saveChannelId(2)">Save Channel ID</button>
+        <hr />
+        <div class="field"><label>Message</label><textarea id="a2-messageInput" placeholder="Type your message…"></textarea></div>
+        <div class="field">
+          <label>Interval: <span id="a2-delayLabel">300ms</span></label>
+          <input type="range" id="a2-delaySlider" min="50" max="2000" step="50" value="300" oninput="updateDelayLabel(2,this.value)" style="width:100%;accent-color:var(--purple);cursor:pointer;margin-top:4px;" />
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px;"><span>50ms</span><span>2s</span></div>
+        </div>
+        <div class="row">
+          <button class="btn btn-purple" onclick="sendOnce(2)" id="a2-sendOnceBtn">Send Once</button>
+          <button class="btn btn-green" onclick="startAutoSend(2)" id="a2-startBtn">▶ Start</button>
+          <button class="btn btn-red" style="display:none" onclick="stopAutoSend(2)" id="a2-stopBtn">■ Stop</button>
+        </div>
+        <div id="a2-sendStats" style="font-size:12px;color:var(--muted);margin-top:8px;display:none;">Sent: <span id="a2-sendCount">0</span></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Token Modal -->
   <div class="modal-overlay" id="tokenModal">
     <div class="modal">
-      <h2 id="tokenModalTitle">🔑 Change Account Token</h2>
-      <p id="tokenModalDesc">Enter a new Discord user token. The bot will disconnect and reconnect immediately.</p>
-      <div class="field"><label>Discord Token</label><input type="password" id="tokenInput" placeholder="Paste your token here…" /></div>
-      <div class="actions">
-        <button class="btn" style="background:var(--bg-card);color:var(--text-secondary)" onclick="closeTokenModal()">Cancel</button>
-        <button class="btn btn-danger" onclick="changeToken()" id="changeTokenBtn">Apply & Reconnect</button>
+      <h2 id="tokenModalTitle">🔑 Change Token</h2>
+      <p id="tokenModalDesc">Paste the Discord user token. The bot reconnects immediately.</p>
+      <div class="field"><label>Discord Token</label><input type="password" id="tokenInput" placeholder="Paste token here…" /></div>
+      <div class="modal-actions">
+        <button class="btn" style="background:var(--card);color:var(--sub)" onclick="closeTokenModal()">Cancel</button>
+        <button class="btn btn-red" onclick="changeToken()" id="changeTokenBtn">Apply & Reconnect</button>
       </div>
     </div>
   </div>
@@ -219,36 +249,43 @@
     const APIS = { 1: '/api/dashboard', 2: '/api/dashboard2' };
 
     const state = {
-      1: { autoReact: { enabled: false, emoji: '👍' }, clipboardMessenger: { enabled: false, channelId: '' }, bot: { status: 'offline', username: null, error: null }, autoSend: { active: false, count: 0, message: '', channelId: '', intervalMs: 300 } },
-      2: { autoReact: { enabled: false, emoji: '👍' }, clipboardMessenger: { enabled: false, channelId: '' }, bot: { status: 'offline', username: null, error: null }, autoSend: { active: false, count: 0, message: '', channelId: '', intervalMs: 300 } },
+      1: { autoReact:{enabled:false,emoji:'👍'}, clipboardMessenger:{enabled:false,channelId:''}, bot:{status:'offline',username:null,error:null}, autoSend:{active:false,count:0,message:'',channelId:'',intervalMs:300} },
+      2: { autoReact:{enabled:false,emoji:'👍'}, clipboardMessenger:{enabled:false,channelId:''}, bot:{status:'offline',username:null,error:null}, autoSend:{active:false,count:0,message:'',channelId:'',intervalMs:300} },
     };
 
     let activeTokenAccount = 1;
-    let pollTimers = { 1: null, 2: null };
-    let pollIntervals = { 1: 5000, 2: 5000 };
+    let pollTimers = {1:null, 2:null};
+    let pollIntervals = {1:5000, 2:5000};
 
-    function p(acc, id) { return document.getElementById('a' + acc + '-' + id); }
+    function p(acc, id) { return document.getElementById('a'+acc+'-'+id); }
 
-    function setFastPoll(acc) { setPoll(acc, 1500); }
-    function setNormalPoll(acc) { setPoll(acc, 5000); }
-    function setPoll(acc, ms) {
-      if (pollTimers[acc]) clearInterval(pollTimers[acc]);
-      pollIntervals[acc] = ms;
-      pollTimers[acc] = setInterval(() => fetchStatus(acc), ms);
+    function switchTab(acc) {
+      [1,2].forEach(a => {
+        document.getElementById('tab'+a).classList.toggle('active', a===acc);
+        document.getElementById('panel'+a).classList.toggle('active', a===acc);
+      });
+    }
+
+    function setFastPoll(acc) { setPoll(acc,1500); }
+    function setNormalPoll(acc) { setPoll(acc,5000); }
+    function setPoll(acc,ms) {
+      if(pollTimers[acc]) clearInterval(pollTimers[acc]);
+      pollIntervals[acc]=ms;
+      pollTimers[acc]=setInterval(()=>fetchStatus(acc),ms);
     }
 
     async function fetchStatus(acc) {
       try {
-        const res = await fetch(APIS[acc] + '/status');
-        const data = await res.json();
-        state[acc].autoReact = data.config.autoReact;
-        state[acc].clipboardMessenger = data.config.clipboardMessenger;
-        state[acc].bot = data.bot;
-        state[acc].autoSend = data.autoSend;
+        const res = await fetch(APIS[acc]+'/status');
+        const d = await res.json();
+        state[acc].autoReact = d.config.autoReact;
+        state[acc].clipboardMessenger = d.config.clipboardMessenger;
+        state[acc].bot = d.bot;
+        state[acc].autoSend = d.autoSend;
         renderAccount(acc);
-        const s = data.bot.status;
-        if ((s === 'online' || s === 'offline' || s === 'error') && pollIntervals[acc] < 4000) setNormalPoll(acc);
-      } catch (e) { console.error('Status fetch failed acc' + acc, e); }
+        const s = d.bot.status;
+        if((s==='online'||s==='offline'||s==='error') && pollIntervals[acc]<4000) setNormalPoll(acc);
+      } catch(e) { console.error('status fetch failed acc'+acc, e); }
     }
 
     function renderAccount(acc) {
@@ -260,185 +297,187 @@
 
     function renderStatus(acc) {
       const s = state[acc].bot.status;
-      p(acc, 'statusDot').className = 'status-dot ' + s;
-      const labels = { online: 'Online', offline: 'Offline', connecting: 'Connecting…', error: 'Connection Failed' };
-      p(acc, 'statusLabel').textContent = labels[s] || s;
-      const sub = p(acc, 'statusSub');
-      if (s === 'online') sub.textContent = 'Logged in as ' + (state[acc].bot.username || 'Unknown');
-      else if (s === 'error') {
-        const msg = state[acc].bot.error || '';
-        sub.textContent = msg.toLowerCase().includes('token') ? 'Invalid token — use "Token" button to update' : msg;
-      } else if (s === 'connecting') sub.textContent = 'Authenticating with Discord…';
-      else sub.textContent = acc === 2 ? 'Set a token to activate Account 2' : 'Bot is not running';
-      p(acc, 'restartBtn').disabled = s === 'connecting';
+      p(acc,'statusDot').className='sdot '+s;
+      const tabDot = document.getElementById('t'+acc+'-dot');
+      tabDot.className='dot '+s;
+      const labels={online:'Online',offline:'Offline',connecting:'Connecting…',error:'Connection Failed'};
+      p(acc,'statusLabel').textContent=labels[s]||s;
+      const sub=p(acc,'statusSub');
+      if(s==='online') sub.textContent='Logged in as '+(state[acc].bot.username||'Unknown');
+      else if(s==='error') {
+        const msg=state[acc].bot.error||'';
+        sub.textContent=msg.toLowerCase().includes('token')?'Invalid token — tap 🔑 Token to fix':msg;
+      } else if(s==='connecting') sub.textContent='Authenticating with Discord…';
+      else sub.textContent=acc===2?'Tap 🔑 Token to activate Account 2':'Bot is offline';
+      p(acc,'restartBtn').disabled=s==='connecting';
     }
 
     function renderAutoReact(acc) {
-      p(acc, 'autoReactToggle').className = 'toggle' + (state[acc].autoReact.enabled ? ' on' : '');
-      p(acc, 'emojiInput').value = state[acc].autoReact.emoji || '👍';
+      const t=p(acc,'autoReactToggle');
+      t.className='toggle'+(acc===2?' p':'')+(state[acc].autoReact.enabled?' on':'');
+      p(acc,'emojiInput').value=state[acc].autoReact.emoji||'👍';
     }
 
     function renderClipboard(acc) {
-      p(acc, 'clipboardToggle').className = 'toggle' + (state[acc].clipboardMessenger.enabled ? ' on' : '');
-      const el = p(acc, 'channelIdInput');
-      if (!el.dataset.edited) el.value = state[acc].clipboardMessenger.channelId || '';
+      const t=p(acc,'clipboardToggle');
+      t.className='toggle'+(acc===2?' p':'')+(state[acc].clipboardMessenger.enabled?' on':'');
+      const el=p(acc,'channelIdInput');
+      if(!el.dataset.edited) el.value=state[acc].clipboardMessenger.channelId||'';
     }
 
     function renderAutoSendUI(acc) {
-      const active = state[acc].autoSend?.active;
-      p(acc, 'startBtn').style.display = active ? 'none' : '';
-      p(acc, 'stopBtn').style.display = active ? '' : 'none';
-      p(acc, 'sendOnceBtn').disabled = !!active;
-      p(acc, 'sendStats').style.display = active ? 'block' : 'none';
-      if (active) {
-        p(acc, 'sendCount').textContent = state[acc].autoSend.count;
-        const msg = p(acc, 'messageInput'); if (!msg.value && state[acc].autoSend.message) msg.value = state[acc].autoSend.message;
-        const cid = p(acc, 'channelIdInput'); if (!cid.value && state[acc].autoSend.channelId) cid.value = state[acc].autoSend.channelId;
-        const sl = p(acc, 'delaySlider'); sl.value = state[acc].autoSend.intervalMs;
-        updateDelayLabel(acc, state[acc].autoSend.intervalMs);
+      const active=state[acc].autoSend?.active;
+      p(acc,'startBtn').style.display=active?'none':'';
+      p(acc,'stopBtn').style.display=active?'':'none';
+      p(acc,'sendOnceBtn').disabled=!!active;
+      p(acc,'sendStats').style.display=active?'block':'none';
+      if(active) {
+        p(acc,'sendCount').textContent=state[acc].autoSend.count;
+        const msg=p(acc,'messageInput'); if(!msg.value&&state[acc].autoSend.message) msg.value=state[acc].autoSend.message;
+        const cid=p(acc,'channelIdInput'); if(!cid.value&&state[acc].autoSend.channelId) cid.value=state[acc].autoSend.channelId;
+        const sl=p(acc,'delaySlider'); sl.value=state[acc].autoSend.intervalMs;
+        updateDelayLabel(acc,state[acc].autoSend.intervalMs);
       }
     }
 
     async function toggleAutoReact(acc) {
-      const newVal = !state[acc].autoReact.enabled;
+      const v=!state[acc].autoReact.enabled;
       try {
-        const res = await fetch(APIS[acc] + '/auto-react', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: newVal, emoji: state[acc].autoReact.emoji }) });
-        const data = await res.json();
-        state[acc].autoReact = data.autoReact;
+        const res=await fetch(APIS[acc]+'/auto-react',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:v,emoji:state[acc].autoReact.emoji})});
+        const d=await res.json();
+        state[acc].autoReact=d.autoReact;
         renderAutoReact(acc);
-        toast(newVal ? '✅ Auto-React enabled' : '⛔ Auto-React disabled', newVal ? 'success' : '');
-      } catch { toast('Failed to toggle Auto-React', 'error'); }
+        toast(v?'✅ Auto-React on':'⛔ Auto-React off',v?'ok':'');
+      } catch { toast('Failed to toggle','err'); }
     }
 
     async function saveEmoji(acc) {
-      const emoji = p(acc, 'emojiInput').value.trim();
-      if (!emoji) return toast('Emoji cannot be empty', 'error');
+      const emoji=p(acc,'emojiInput').value.trim();
+      if(!emoji) return toast('Emoji cannot be empty','err');
       try {
-        const res = await fetch(APIS[acc] + '/auto-react', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: state[acc].autoReact.enabled, emoji }) });
-        const data = await res.json();
-        state[acc].autoReact = data.autoReact;
-        toast('✅ Emoji saved: ' + emoji, 'success');
-      } catch { toast('Failed to save emoji', 'error'); }
+        const res=await fetch(APIS[acc]+'/auto-react',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:state[acc].autoReact.enabled,emoji})});
+        const d=await res.json();
+        state[acc].autoReact=d.autoReact;
+        toast('✅ Emoji saved: '+emoji,'ok');
+      } catch { toast('Failed to save emoji','err'); }
     }
 
     async function toggleClipboard(acc) {
-      const newVal = !state[acc].clipboardMessenger.enabled;
+      const v=!state[acc].clipboardMessenger.enabled;
       try {
-        const res = await fetch(APIS[acc] + '/clipboard-messenger', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: newVal, channelId: state[acc].clipboardMessenger.channelId }) });
-        const data = await res.json();
-        state[acc].clipboardMessenger = data.clipboardMessenger;
+        const res=await fetch(APIS[acc]+'/clipboard-messenger',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:v,channelId:state[acc].clipboardMessenger.channelId})});
+        const d=await res.json();
+        state[acc].clipboardMessenger=d.clipboardMessenger;
         renderClipboard(acc);
-        toast(newVal ? '✅ Messenger enabled' : '⛔ Messenger disabled', newVal ? 'success' : '');
-      } catch { toast('Failed to toggle', 'error'); }
+        toast(v?'✅ Messenger on':'⛔ Messenger off',v?'ok':'');
+      } catch { toast('Failed to toggle','err'); }
     }
 
     async function saveChannelId(acc) {
-      const channelId = p(acc, 'channelIdInput').value.trim();
+      const channelId=p(acc,'channelIdInput').value.trim();
       try {
-        const res = await fetch(APIS[acc] + '/clipboard-messenger', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: state[acc].clipboardMessenger.enabled, channelId }) });
-        const data = await res.json();
-        state[acc].clipboardMessenger = data.clipboardMessenger;
-        p(acc, 'channelIdInput').dataset.edited = '';
-        toast('✅ Channel ID saved', 'success');
-      } catch { toast('Failed to save Channel ID', 'error'); }
+        const res=await fetch(APIS[acc]+'/clipboard-messenger',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:state[acc].clipboardMessenger.enabled,channelId})});
+        const d=await res.json();
+        state[acc].clipboardMessenger=d.clipboardMessenger;
+        p(acc,'channelIdInput').dataset.edited='';
+        toast('✅ Channel ID saved','ok');
+      } catch { toast('Failed to save Channel ID','err'); }
     }
 
-    function updateDelayLabel(acc, val) {
-      const ms = parseInt(val);
-      p(acc, 'delayLabel').textContent = ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : ms + 'ms';
-      if (state[acc].autoSend?.active) {
-        fetch(APIS[acc] + '/auto-send/interval', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ intervalMs: ms }) }).catch(() => {});
+    function updateDelayLabel(acc,val) {
+      const ms=parseInt(val);
+      p(acc,'delayLabel').textContent=ms>=1000?(ms/1000).toFixed(1)+'s':ms+'ms';
+      if(state[acc].autoSend?.active) {
+        fetch(APIS[acc]+'/auto-send/interval',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({intervalMs:ms})}).catch(()=>{});
       }
     }
 
     async function sendOnce(acc) {
-      const message = p(acc, 'messageInput').value.trim();
-      const channelId = p(acc, 'channelIdInput').value.trim() || state[acc].clipboardMessenger.channelId;
-      if (!message) return toast('Message cannot be empty', 'error');
-      if (!channelId) return toast('Please enter a Channel ID first', 'error');
-      const btn = p(acc, 'sendOnceBtn'); btn.disabled = true; btn.textContent = 'Sending…';
+      const message=p(acc,'messageInput').value.trim();
+      const channelId=p(acc,'channelIdInput').value.trim()||state[acc].clipboardMessenger.channelId;
+      if(!message) return toast('Message cannot be empty','err');
+      if(!channelId) return toast('Enter a Channel ID first','err');
+      const btn=p(acc,'sendOnceBtn'); btn.disabled=true; btn.textContent='Sending…';
       try {
-        const res = await fetch(APIS[acc] + '/send-message', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message, channelId }) });
-        const data = await res.json();
-        toast(data.success ? '✅ Message sent!' : 'Error: ' + (data.error || 'Failed'), data.success ? 'success' : 'error');
-      } catch { toast('Failed to send message', 'error'); }
-      btn.disabled = false; btn.textContent = 'Send Once';
+        const res=await fetch(APIS[acc]+'/send-message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,channelId})});
+        const d=await res.json();
+        toast(d.success?'✅ Sent!':'Error: '+(d.error||'Failed'),d.success?'ok':'err');
+      } catch { toast('Failed to send','err'); }
+      btn.disabled=false; btn.textContent='Send Once';
     }
 
     async function startAutoSend(acc) {
-      const message = p(acc, 'messageInput').value.trim();
-      const channelId = p(acc, 'channelIdInput').value.trim() || state[acc].clipboardMessenger.channelId;
-      if (!message) return toast('Message cannot be empty', 'error');
-      if (!channelId) return toast('Please enter a Channel ID first', 'error');
-      const intervalMs = parseInt(p(acc, 'delaySlider').value);
+      const message=p(acc,'messageInput').value.trim();
+      const channelId=p(acc,'channelIdInput').value.trim()||state[acc].clipboardMessenger.channelId;
+      if(!message) return toast('Message cannot be empty','err');
+      if(!channelId) return toast('Enter a Channel ID first','err');
+      const intervalMs=parseInt(p(acc,'delaySlider').value);
       try {
-        const res = await fetch(APIS[acc] + '/auto-send/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message, channelId, intervalMs }) });
-        const data = await res.json();
-        if (data.success) { state[acc].autoSend = data.autoSend; renderAutoSendUI(acc); toast('▶ Auto-send running', 'success'); }
-        else toast('Error: ' + (data.error || 'Failed to start'), 'error');
-      } catch { toast('Failed to start auto-send', 'error'); }
+        const res=await fetch(APIS[acc]+'/auto-send/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,channelId,intervalMs})});
+        const d=await res.json();
+        if(d.success){state[acc].autoSend=d.autoSend;renderAutoSendUI(acc);toast('▶ Auto-send running','ok');}
+        else toast('Error: '+(d.error||'Failed'),'err');
+      } catch { toast('Failed to start','err'); }
     }
 
     async function stopAutoSend(acc) {
       try {
-        const res = await fetch(APIS[acc] + '/auto-send/stop', { method: 'POST' });
-        const data = await res.json();
-        const count = state[acc].autoSend?.count ?? 0;
-        state[acc].autoSend = data.autoSend;
+        const res=await fetch(APIS[acc]+'/auto-send/stop',{method:'POST'});
+        const d=await res.json();
+        const count=state[acc].autoSend?.count??0;
+        state[acc].autoSend=d.autoSend;
         renderAutoSendUI(acc);
-        toast('⛔ Stopped after ' + count + ' messages', '');
-      } catch { toast('Failed to stop auto-send', 'error'); }
+        toast('⛔ Stopped after '+count+' messages','');
+      } catch { toast('Failed to stop','err'); }
     }
 
     async function restartBot(acc) {
-      const btn = p(acc, 'restartBtn'); btn.disabled = true;
+      const btn=p(acc,'restartBtn'); btn.disabled=true;
       try {
-        const res = await fetch(APIS[acc] + '/restart-bot', { method: 'POST' });
-        const data = await res.json();
-        if (data.success) { state[acc].bot.status = 'connecting'; renderStatus(acc); toast('🔄 Restarting bot ' + acc + '…', ''); setFastPoll(acc); }
-        else { toast('Error: ' + (data.error || 'Failed'), 'error'); btn.disabled = false; }
-      } catch { toast('Failed to reach server', 'error'); btn.disabled = false; }
+        const res=await fetch(APIS[acc]+'/restart-bot',{method:'POST'});
+        const d=await res.json();
+        if(d.success){state[acc].bot.status='connecting';renderStatus(acc);toast('🔄 Restarting bot '+acc+'…','');setFastPoll(acc);}
+        else{toast('Error: '+(d.error||'Failed'),'err');btn.disabled=false;}
+      } catch { toast('Failed to reach server','err'); btn.disabled=false; }
     }
 
     function openTokenModal(acc) {
-      activeTokenAccount = acc;
-      document.getElementById('tokenModalTitle').textContent = '🔑 Account ' + acc + ' Token';
-      document.getElementById('tokenModalDesc').textContent = 'Enter the Discord user token for Account ' + acc + '. The bot will reconnect immediately.';
-      document.getElementById('tokenInput').value = '';
-      const btn = document.getElementById('changeTokenBtn'); btn.disabled = false; btn.textContent = 'Apply & Reconnect';
-      document.getElementById('tokenModal').classList.add('active');
+      activeTokenAccount=acc;
+      document.getElementById('tokenModalTitle').textContent='🔑 Account '+acc+' Token';
+      document.getElementById('tokenModalDesc').textContent='Paste the Discord user token for Account '+acc+'. The bot reconnects immediately.';
+      document.getElementById('tokenInput').value='';
+      const btn=document.getElementById('changeTokenBtn'); btn.disabled=false; btn.textContent='Apply & Reconnect';
+      document.getElementById('tokenModal').classList.add('open');
     }
-    function closeTokenModal() { document.getElementById('tokenModal').classList.remove('active'); }
+    function closeTokenModal() { document.getElementById('tokenModal').classList.remove('open'); }
 
     async function changeToken() {
-      const token = document.getElementById('tokenInput').value.trim();
-      if (!token) return toast('Token cannot be empty', 'error');
-      const acc = activeTokenAccount;
-      const btn = document.getElementById('changeTokenBtn'); btn.disabled = true; btn.textContent = 'Saving…';
+      const token=document.getElementById('tokenInput').value.trim();
+      if(!token) return toast('Token cannot be empty','err');
+      const acc=activeTokenAccount;
+      const btn=document.getElementById('changeTokenBtn'); btn.disabled=true; btn.textContent='Saving…';
       try {
-        const res = await fetch(APIS[acc] + '/change-token', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
-        const data = await res.json();
-        if (data.success) { closeTokenModal(); state[acc].bot.status = 'connecting'; renderStatus(acc); toast('✅ Token saved — reconnecting…', 'success'); setFastPoll(acc); }
-        else { toast('Error: ' + (data.error || 'Failed'), 'error'); btn.disabled = false; btn.textContent = 'Apply & Reconnect'; }
-      } catch { toast('Failed to reach server', 'error'); btn.disabled = false; btn.textContent = 'Apply & Reconnect'; }
+        const res=await fetch(APIS[acc]+'/change-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});
+        const d=await res.json();
+        if(d.success){closeTokenModal();state[acc].bot.status='connecting';renderStatus(acc);toast('✅ Token saved — reconnecting…','ok');setFastPoll(acc);}
+        else{toast('Error: '+(d.error||'Failed'),'err');btn.disabled=false;btn.textContent='Apply & Reconnect';}
+      } catch { toast('Failed to reach server','err'); btn.disabled=false; btn.textContent='Apply & Reconnect'; }
     }
 
-    function toast(msg, type = '') {
-      const wrap = document.getElementById('toastWrap');
-      const el = document.createElement('div');
-      el.className = 'toast' + (type ? ' ' + type : '');
-      el.textContent = msg;
+    function toast(msg,type='') {
+      const wrap=document.getElementById('toastWrap');
+      const el=document.createElement('div');
+      el.className='toast'+(type?' '+type:'');
+      el.textContent=msg;
       wrap.appendChild(el);
-      setTimeout(() => el.remove(), 4000);
+      setTimeout(()=>el.remove(),3500);
     }
 
-    // Mark channel ID inputs as user-edited
-    [1, 2].forEach(acc => {
-      p(acc, 'channelIdInput').addEventListener('input', function() { this.dataset.edited = '1'; });
+    [1,2].forEach(acc => {
+      p(acc,'channelIdInput').addEventListener('input',function(){this.dataset.edited='1';});
     });
-    document.getElementById('tokenModal').addEventListener('click', function(e) { if (e.target === this) closeTokenModal(); });
+    document.getElementById('tokenModal').addEventListener('click',function(e){if(e.target===this)closeTokenModal();});
 
-    // Initial load
     fetchStatus(1); fetchStatus(2);
     setNormalPoll(1); setNormalPoll(2);
   </script>

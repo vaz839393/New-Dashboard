@@ -34,11 +34,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const publicDir = join(__dirname, "..", "public");
-app.use(express.static(publicDir));
+
+// Serve static assets with caching, but never cache the HTML itself
+app.use(express.static(publicDir, { etag: false, lastModified: false }));
 
 app.use("/api", router);
 
 app.get("/", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   res.sendFile(join(publicDir, "index.html"));
 });
 
